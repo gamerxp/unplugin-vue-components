@@ -36,7 +36,7 @@ export function resolveOptions(options: Options, root: string): ResolvedOptions 
   resolved.extensions = toArray(resolved.extensions)
 
   if (resolved.globs) {
-    resolved.globs = toArray(resolved.globs).map((glob: string) => slash(resolveGlobsExclude(root, glob)))
+    resolved.globs = toArray(resolved.globs).map((glob: string) => slash(resolveGlobsExclude(root, glob)).replace(/\[/g, '\\[').replace(/\]/g, '\\]'))
     resolved.resolvedDirs = []
   }
   else {
@@ -47,9 +47,9 @@ export function resolveOptions(options: Options, root: string): ResolvedOptions 
     resolved.dirs = toArray(resolved.dirs)
     resolved.resolvedDirs = resolved.dirs.map(i => slash(resolveGlobsExclude(root, i)))
 
-    resolved.globs = resolved.resolvedDirs.map(i => resolved.deep
+    resolved.globs = resolved.resolvedDirs.map(i => (resolved.deep
       ? slash(join(i, `**/*.${extsGlob}`))
-      : slash(join(i, `*.${extsGlob}`)),
+      : slash(join(i, `*.${extsGlob}`))).replace(/\[/g, '\\[').replace(/\]/g, '\\]'),
     )
 
     if (!resolved.extensions.length)
